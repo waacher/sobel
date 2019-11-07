@@ -8,14 +8,13 @@
 #include <stdio.h>
 #include <time.h>
 
-
 using namespace cv;
 using namespace std;
 
 Mat *top_grey;
 Mat *top_sobel;
 
-void * to442_grayscale(Mat * frame)
+void *to442_grayscale(Mat *frame)
 {
     Mat *ptr = frame;
     //CV_Assert(frame.type() == CV_8UC3);
@@ -32,8 +31,8 @@ void * to442_grayscale(Mat * frame)
         for( j = 3; j < nCols-3; j+=3)
         {
             uchar pixelB = frame->ptr(i)[j] * 0.0722;
-            uchar pixelG = frame->ptr(i)[j+1]*.7152;
-            uchar pixelR = frame->ptr(i)[j+2] *.2126;
+            uchar pixelG = frame->ptr(i)[j+1] * .7152;
+            uchar pixelR = frame->ptr(i)[j+2] * .2126;
             int  grey = pixelB + pixelG + pixelR;
 
             /* No if statements in pragma
@@ -50,7 +49,7 @@ void * to442_grayscale(Mat * frame)
     return (void *)ptr;
 }
 
-void * to442_sobel(Mat *frame)
+void *to442_sobel(Mat *frame)
 {
     Mat cpy = frame->clone();
     Mat *ptr = frame;
@@ -100,7 +99,7 @@ void * to442_sobel(Mat *frame)
 	    frame->ptr(i)[j+2] = g;
         }
     }
-    return (void *) ptr;
+    return (void *)ptr;
 }
 
 Mat combine(Mat original, Mat frame_top, Mat frame_bot)
@@ -132,9 +131,9 @@ Mat combine(Mat original, Mat frame_top, Mat frame_bot)
     return original;
 }
 
-void * thread_func(void * arg)
+void *thread_func(void *arg)
 {
-    Mat *frame = (Mat *) arg;
+    Mat *frame = (Mat *)arg;
     top_grey = (Mat *)to442_grayscale(frame);
     top_sobel = (Mat *)to442_sobel(top_grey);
     pthread_exit(0);
@@ -181,8 +180,8 @@ int main(int argc, char *argv[])
         pthread_create(&t1, NULL, thread_func, &croppedFrameTop);
 
         // Grayscale and Sobel on top
-        frame_pointer_bot_grey =(Mat*)to442_grayscale(&croppedFrameBot);
-	frame_pointer_bot_sobel  = (Mat*)to442_sobel(frame_pointer_bot_grey);
+        frame_pointer_bot_grey =(Mat *)to442_grayscale(&croppedFrameBot);
+	frame_pointer_bot_sobel  = (Mat *)to442_sobel(frame_pointer_bot_grey);
 
         pthread_join(t1, NULL);
 
